@@ -134,24 +134,19 @@ std::vector<std::pair<float, Part>> OrderOptimizerNode::FindShortestPath(OrderDe
 {
     std::vector<std::pair<float, Part>> shortestPath;
 
-    // Loop through each part in the vector
     for (const auto& part : vector)
     {
         float dist = distance(details.cx, details.cy, part.cx, part.cy);
-
-        // Create a pair containing the distance and the current part
         std::pair<float, Part> pathPair(dist, part);
+
+        // Add the pair to the shortest path vector
         shortestPath.push_back(pathPair);
     }
-
     std::sort(shortestPath.begin(), shortestPath.end(), [](const auto& lhs, const auto& rhs) {
         return lhs.first < rhs.first;
     });
-
-    // Return the sorted shortest path vector
     return shortestPath;
 }
-
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
