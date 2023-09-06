@@ -130,49 +130,28 @@ void OrderOptimizerNode::PathOutput(msg_package::msg::Order::SharedPtr msg, std:
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
-std::vector<std::pair<float, Part>> OrderOptimizerNode::FindShortestPath(OrderDetails details_)
+std::vector<std::pair<float, Part>> OrderOptimizerNode::FindShortestPath(OrderDetails details)
 {
-    // Initializing data structures for Dijkstra's algorithm 
-    std::priority_queue<std::pair<float, Part>, std::vector<std::pair<float, Part>>, std::greater<>> pq;
-    std::unordered_map<std::string, float> distance;
-    std::unordered_map<std::string, Part> previous;
-   
-    for (const auto& pair : vector) {
-        distance[pair.second.part_name] = std::numeric_limits<float>::infinity();
-    }
-    distance[details_.part_name] = 0.0;
-    pq.push({0.0, details_});
-    
-    // Dijkstra's algorithm
-    while (!pq.empty()) {
-        auto current = pq.top().second;
-        pq.pop();
-        
-        // Iterate through neighbors (parts in the vector)
-        for (const auto& neighbor : vector) {
-            if (neighbor.second.part_name != current.part_name) {
-                continue;
-            }
+    std::vector<std::pair<float, Part>> shortestPath;
 
-            float new_distance = distance[current.part_name] + distance(neighbor.second.cx, neighbor.second.cy, current.cx, current.cy);
-            
-            if (new_distance < distance[neighbor.second.part_name]) {
-                distance[neighbor.second.part_name] = new_distance;
-                previous[neighbor.second.part_name] = current;
-                pq.push({new_distance, neighbor.second});
-            }
-        }
+    // Loop through each part in the vector
+    for (const auto& part : vector)
+    {
+        float dist = distance(details.cx, details.cy, part.cx, part.cy);
+
+        // Create a pair containing the distance and the current part
+        std::pair<float, Part> pathPair(dist, part);
+        shortestPath.push_back(pathPair);
     }
-    std::vector<std::pair<float, Part>> shortest_path;
-    Part current_part = details_;
-    while (previous.find(current_part.part_name) != previous.end()) {
-        shortest_path.push_back({distance[current_part.part_name], current_part});
-        current_part = previous[current_part.part_name];
-    }
-    std::reverse(shortest_path.begin(), shortest_path.end());
-    
-    return shortest_path;
+
+    std::sort(shortestPath.begin(), shortestPath.end(), [](const auto& lhs, const auto& rhs) {
+        return lhs.first < rhs.first;
+    });
+
+    // Return the sorted shortest path vector
+    return shortestPath;
 }
+
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
