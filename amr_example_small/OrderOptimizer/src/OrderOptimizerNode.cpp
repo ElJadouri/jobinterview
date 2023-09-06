@@ -27,8 +27,7 @@ OrderOptimizerNode::OrderOptimizerNode() : Node("OrderOptimizer")
     "nextOrder", 10, std::bind(&OrderOptimizerNode::msgNextOrder, this, std::placeholders::_1));
 
   // Publisher
-  markerArrayPub_ = this->create_publisher<visualization_msgs::msg::Marker>("order_path", rclcpp::SystemDefaultsQoS());
-
+  markerArrayPub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("order_path", rclcpp::SystemDefaultsQoS());
 
 }
 
@@ -70,10 +69,7 @@ void OrderOptimizerNode::msgNextOrder(msg_package::msg::Order::SharedPtr msg)
         // TODO: parse files using one of the parser methods
         // Use the list of threads to perform order prsing in parallel
         for (std::thread &thread : threads_) {
-          // thread = std::thread(&OrderOptimizerNode::parseOrderFile, std::ref(file), std::ref(order_id), std::ref(found), std::ref(details_), std::ref(files_));
-          // thread = std::thread([=](){
-          //   parseOrderFile(folder.path().filename(), order_id, found, &details_, files_);
-          //   });
+          // thread = std::thread(&OrderOptimizerNode::parseOrderFile, file, order_id, std::ref(found), &details_, std::ref(files_));
         }
       }
 	  
@@ -136,7 +132,17 @@ void OrderOptimizerNode::PathOutput(msg_package::msg::Order::SharedPtr msg, std:
 //------------------------------------------------------------------------------------------------------------------------------------
 std::vector<std::pair<float, Part>> OrderOptimizerNode::FindShortestPath(OrderDetails details_)
 {
-  // TODO: Implement me 
+  // // TODO: Implement me
+  // Not sure How to get the list of parts from Order details, should I compare the vector<strings> products from Order Details
+  // with the string product_name from ProductDetails ? what is the next step, do I compare which distances ? This part was a little unclear to me. 
+
+
+  // for (auto& productInOrder : details_.products) {
+  //   if (products.count(productInOrder) > 0) {
+
+  //   }
+  // }
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -152,6 +158,8 @@ void OrderOptimizerNode::PublishMarkerArray(std::vector<std::pair<float, Part>> 
     auto pickupMarker = Pickup(*it);
     markerArray.markers.push_back(pickupMarker);
   }
+
+  markerArrayPub_->publish(markerArray);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -254,5 +262,3 @@ void OrderOptimizerNode::parseOrderFile(fs::path file, uint32 order_id, bool &fo
     }
   }
 }
-
-//------------------------------------------------------------------------------------------------------------------------------------
