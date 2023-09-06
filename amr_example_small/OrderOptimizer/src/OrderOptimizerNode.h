@@ -44,7 +44,7 @@ class OrderOptimizerNode : public rclcpp::Node
  private:
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr currentPositionSub_;
   rclcpp::Subscription<msg_package::msg::Order>::SharedPtr nextOrderSub_;
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr markerArrayPub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr markerArrayPub_;
 
   std::string path_;
   std::map<int, ProductDetails> products;
